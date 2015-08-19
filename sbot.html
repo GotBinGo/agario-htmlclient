@@ -1,0 +1,117 @@
+<html>
+	<head>
+		<script>
+		var q = 2.5;
+		function go()
+		{	
+			var ws = new WebSocket("ws://s13.webtar.hu:8080");
+			var canvas = document.getElementById('canvas');
+			var slider = document.getElementById('slider');
+			slider.oninput = function(e)
+			{
+				q = this.value/10
+			}
+
+			var balls =[]
+			var pos = {x:500,y:500};
+			canvas.tabIndex = 1000;
+			canvas.onkeypress = function(e)
+			{				
+				if(e.charCode == 32)
+				{
+					ws.send("s")
+					console.log("s")
+				}
+				if(e.charCode == 119)
+				{
+					ws.send("e")
+					console.log("e")
+				}
+			};
+			/*
+			canvas.onkeydown = function(e)
+			{				
+					ws.send("d "+e.keyCode)				
+
+			};
+			canvas.onkeyup =function(e)
+			{				
+					ws.send("u "+e.keyCode)				
+
+			};*/
+			document.body.onmousemove =function(e)
+			{				
+					/*
+					ws.send((parseInt(pos.x)+parseInt((e.clientX-500)/q))+" "+(parseInt(pos.y)+parseInt((e.clientY-500)/q)));
+
+					console.log(parseInt(pos.x)+parseInt((e.clientX-500)/q)+" "+parseInt(pos.y)
+						+parseInt((e.clientY-500)/q));
+					*/
+					var a = canvas.getBoundingClientRect();
+					console.log(a.right)
+					ws.send((e.clientX-500)*q+" "+(parseInt(0)+e.clientY-500)*q);
+					document.getElementById("canvas").focus();
+					//ws.send(e.screenX*q+" "+e.screenY*q)
+			};
+			var context = canvas.getContext('2d');
+			//var context = null;
+			ws.onopen = function()
+			{
+				console.log("open")
+			//	var canvas = document.getElementById('canvas');
+			//	var context = canvas.getContext('2d');
+			}
+			ws.onmessage = function(msg)
+			{
+				//console.log(msg.data);
+				var s = msg.data.split(" ")
+				if(s[0] == "c" )
+				{
+					canvas.width = canvas.width;
+					for (a in balls)
+						drawcircle.apply(0,balls[a]);
+					balls = []
+				}
+				if(s[0] == "p" )
+				{
+					//console.log(msg);
+					pos.x = s[1];
+					pos.y = s[2];
+					//console.log(pos)
+				}
+			    
+				balls.push([s[0],s[1],s[2],s[3],s[4]]);
+				//drawcircle(100,100,10)
+			}
+			function drawcircle(x,y,r,c,n)
+			{				
+			    var centerX = 500+(parseInt(x)-parseInt(pos.x))/q
+			    var centerY = 500+(parseInt(y)-parseInt(pos.y))/q
+			    //console.log(centerX+" "+centerY)
+			    var radius = r/q
+
+			    context.beginPath();
+			    context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+			    context.fillStyle = c;
+			    context.fill();
+			    context.font = "10px Arial";
+			    context.textAlign = 'center';
+			    context.fillStyle = "black";
+			    
+				context.fillText(n|| "",500+(parseInt(x)-parseInt(pos.x))/q,500+(parseInt(y)-parseInt(pos.y))/q);
+				context.fillText(r > 15 ? r:"" ,500+(parseInt(x)-parseInt(pos.x))/q,500+(parseInt(y)-parseInt(pos.y))/q+10);
+
+			    //context.lineWidth = 5;
+			    //context.strokeStyle = '#003300';
+			    //context.stroke();
+			}
+		}
+		</script>
+	</head>
+	<body onload="go()" style="margin:0">
+		<canvas id="canvas" style="border:1px solid black" width="1000" height="1000">
+		</canvas>
+		<br>
+		<input type="range" id="slider" value="25" min="1" max="100">
+	</body>
+</html>
