@@ -4,8 +4,10 @@
 		var q = 2.5;
 		function go()
 		{	
-			var ws = new WebSocket("ws://s13.webtar.hu:8080");
+			//var ws = new WebSocket("ws://s13.webtar.hu:8080");
+			var ws = new WebSocket("ws://192.168.0.68:8080");
 			var canvas = document.getElementById('canvas');
+			var pre = document.getElementById('pre');
 			var slider = document.getElementById('slider');
 			slider.oninput = function(e)
 			{
@@ -77,6 +79,8 @@
 					//console.log(msg);
 					pos.x = s[1];
 					pos.y = s[2];
+					pre.textContent = pos.x+" "+pos.y;
+
 					//console.log(pos)
 				}
 			    
@@ -109,8 +113,10 @@
 		</script>
 	</head>
 	<body onload="go()" style="margin:0">
+		<pre id="pre" style="position:absolute">asd</pre>
 		<canvas id="canvas" style="border:1px solid black" width="1000" height="1000">
 		</canvas>
+
 		<br>
 		<input type="range" id="slider" value="25" min="1" max="100">
 	</body>
